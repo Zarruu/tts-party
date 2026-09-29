@@ -1,0 +1,11 @@
+# Roblox/Rojo build artifacts
+build/
+sourcemap.json
+*.rbxl.lock
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+
