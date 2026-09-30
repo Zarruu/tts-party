@@ -70,7 +70,7 @@ Runner kecil tanpa dependensi baru, namun kontrak dan pelaporannya dirawat
 proyek. Tidak ada dukungan async, coverage, atau isolasi proses per kasus.
 Test Studio, UI, input, dan multi-client tetap dijalankan pengembang.
 
-## Verification
+## Verification at T0.5
 
 Pada Windows dengan Lune 0.10.4:
 
@@ -80,12 +80,20 @@ Pada Windows dengan Lune 0.10.4:
   0 passed, 1 failed, exit 1; kemudian file dipulihkan dan kembali exit 0.
 - Probe spec kosong sementara: 1 passed, 1 failed, exit 1; smoke tetap dijalankan.
 - stylua --check src tests: exit 0; selene src tests: exit 0, tanpa error/warning.
-- scripts/check.sh belum tersedia (T0.6); pemanggilannya gagal. Pemeriksaan
-  gabungan belum hijau, sehingga commit ditunda sesuai AGENTS.md bagian 3.
+- Pada T0.5, `scripts/check.sh` memang belum tersedia; hasil setelah T0.6 dicatat di bawah.
 
 Untuk mengulang bukti negatif, ubah sementara expected name dalam smoke spec,
 jalankan runner, periksa $LASTEXITCODE di PowerShell, lalu pulihkan dan jalankan
 lagi. Jangan menyimpan assertion yang sengaja salah.
+
+## Verifikasi setelah T0.6
+
+Di Windows, `scripts/check.sh` (Git Bash) dan `scripts/check.ps1` sama-sama
+lulus pada repo ini. Keduanya gagal di tahap format saat format dirusak dan
+mengembalikan exit non-zero saat test sengaja gagal. Setelah probe dibersihkan,
+keduanya kembali hijau dengan satu smoke test lulus. Analisis tipe mengembalikan
+exit 0 tetapi memperingatkan bahwa definisi Roblox belum dikonfigurasi; cek API
+Roblox perlu dievaluasi setelah konfigurasi tipe tersedia.
 
 ## Sources
 

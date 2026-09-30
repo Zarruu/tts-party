@@ -8,7 +8,7 @@ Game Roblox: teka-teki silang (TTS) dengan gameplay word connect (seret huruf ke
 
 **Stack:** Roblox Studio, Luau (`--!strict`), Rojo, VS Code.
 
-**Status milestone saat ini:** M0 (setup proyek). *Perbarui baris ini setiap pindah milestone.*
+**Status milestone saat ini:** M0 (setup proyek). CP0 masih menunggu verifikasi bootstrap di Studio dan pemeriksaan pada clone bersih. Perbarui baris ini setelah checkpoint benar-benar selesai.
 
 ## 2. Dokumen rujukan (baca dulu)
 
@@ -27,11 +27,11 @@ Sintaks dapat berubah. Verifikasi ke dokumentasi resmi tiap alat, lalu perbarui 
 
 | Tujuan | Perintah |
 |---|---|
-| Pasang alat | `rokit install` (atau `aftman install`) |
+| Pasang alat | `rokit install` (versi dipin di `rokit.toml`) |
 | Sinkron ke Studio | `rojo serve` |
 | Build place | `rojo build -o build/TTSParty.rbxl` |
 | Format | `stylua src tests` |
-| Lint | `selene src tests` |
+| Lint | `selene src tests` (`roblox.yml` berisi definisi std Roblox) |
 | Analisis tipe | `rojo sourcemap default.project.json -o sourcemap.json` lalu `luau-lsp analyze --sourcemap sourcemap.json src` |
 | Unit test | `lune run tests/run` (runner final: lihat ADR-0001) |
 | **Semua pemeriksaan** | Bash: `./scripts/check.sh`; Windows PowerShell: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1` |
@@ -53,6 +53,8 @@ tools/        -> skrip luar Roblox (generator/validator puzzle, Python)
 tests/        -> *.spec.luau
 docs/         -> GDD, SPEC, PLAN, adr/
 ```
+
+Pohon di atas menunjukkan tujuan tiap folder; pada M0 beberapa folder berisi placeholder dan modul layanan/UI akan ditambahkan pada tugas M1–M2.
 
 Tempatkan kode di lapisan yang benar:
 
@@ -109,7 +111,7 @@ Logika yang bisa dipisah dari Roblox (validasi kata, layout, sesi seretan, rate 
 
 1. Baca dokumen rujukan dan kode terkait. Bila permintaan ambigu atau butuh keputusan desain, **tanya dulu**.
 2. Kerjakan **satu irisan vertikal kecil**: implementasi, test, verifikasi, commit. Hindari mengubah banyak modul sekaligus.
-3. Jalankan `./scripts/check.sh`. Perbaiki sampai hijau.
+3. Jalankan `./scripts/check.sh` (Windows: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1`). Perbaiki sampai hijau.
 4. Perbarui dokumen yang terdampak (SPEC, GDD, ADR).
 5. Laporkan hasil dengan format di bagian 12.
 
@@ -149,7 +151,7 @@ Persona review (bila tersedia di lingkungan): `code-reviewer` di tiap milestone,
 
 **Selalu**
 
-- Jalankan `./scripts/check.sh` sebelum commit.
+- Jalankan `./scripts/check.sh` sebelum commit (Windows: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1`).
 - Verifikasi API Roblox ke dokumentasi resmi (`create.roblox.com/docs`). Bila tidak yakin, katakan tidak yakin.
 - Tulis test untuk logika murni.
 - Simpan keputusan arsitektur sebagai ADR di `docs/adr/`.

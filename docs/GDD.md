@@ -7,7 +7,7 @@
 | Engine / Toolchain | Roblox Studio, Luau, Rojo, VS Code, Codex |
 | Genre | Word connect + teka-teki silang (TTS), multiplayer party |
 | Bahasa konten | Indonesia (utama) |
-| Status | Konsep. Perlu diturunkan ke `SPEC.md` dan `PLAN.md` sebelum implementasi |
+| Status | Dokumen visi dan perilaku game; aturan teknis dirinci di `docs/SPEC.md` dan tugas di `docs/PLAN.md`. Implementasi saat ini masih di M0. |
 
 ---
 
@@ -288,7 +288,9 @@ Avatar pemain di sekitar meja dapat memainkan emote singkat saat menang/salah (o
 
 ## 10. Arsitektur Teknis
 
-### 10.1 Struktur proyek (Rojo)
+### 10.1 Struktur target proyek (Rojo)
+
+Pohon berikut menggambarkan arsitektur target lintas milestone, bukan daftar file yang semuanya sudah dibuat. Status implementasi aktual mengikuti `docs/PLAN.md`; generator puzzle direncanakan untuk M6.
 
 ```
 proyek/
@@ -373,8 +375,8 @@ Catatan: model meja dibuat di Studio, diekspor sebagai `.rbxm`, lalu disinkronka
 
 | Lapisan | Alat/cara | Yang diuji |
 |---|---|---|
-| Unit (logika murni) | Jest-Lua atau TestEZ, dapat dijalankan dengan Lune | Multiset letters, validasi kata, skor, state machine, pemilihan puzzle |
-| Validator puzzle | Skrip Python di CI | Semua puzzle lolos aturan 8.2 |
+| Unit (logika murni) | Lune dengan runner ringan di `tests/run.luau` (`docs/adr/0001-test-runner.md`) | Multiset letters, validasi kata, skor, state machine, pemilihan puzzle |
+| Validator puzzle (rencana M6) | Skrip Python lokal; CI belum disiapkan | Semua puzzle lolos aturan 8.2 |
 | Integrasi | Playtest multi-client di Studio (Test > Local Server, 1 sampai 4 pemain, termasuk skenario 2v2) | Duduk/berdiri, sinkron papan, disconnect |
 | UI/Input | Emulator perangkat Studio + perangkat asli | Seret huruf sentuh dan mouse, safe area, 70:30 |
 | Statis | Selene + StyLua + luau-lsp (strict) | Lint, format, tipe |

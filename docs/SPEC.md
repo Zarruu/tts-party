@@ -5,7 +5,7 @@
 | Versi | 0.1 (draft) |
 | Rujukan | `docs/GDD.md` v0.2 |
 | Cakupan | M0 (setup proyek), M1 (prototipe solo lokal), M2 (validasi server) |
-| Status | Draft. Perlu ditinjau sebelum dipecah menjadi `PLAN.md` |
+| Status | Draft v0.1; sudah dirinci di `docs/PLAN.md` dan diperbarui bersama implementasi |
 
 Dokumen ini adalah kontrak kerja untuk agent dan pengembang. Bila ada konflik, GDD menentukan *apa*, SPEC ini menentukan *bagaimana dan kapan dianggap selesai*.
 
@@ -29,26 +29,28 @@ Meja/kursi, state machine meja, mode Team/Duel, DataStore, koin, hint, generator
 
 ## 2. Perintah (Commands)
 
-Nama alat dan flag adalah rencana awal. **Verifikasi versi dan sintaks di dokumentasi resmi tiap alat** sebelum dipakai, lalu perbarui bagian ini.
+Versi alat yang dipakai dipin di `rokit.toml`. Sintaks perintah di bagian ini diverifikasi terhadap dokumentasi resmi alat tersebut.
 
-| Tujuan | Perintah (rencana) |
+| Tujuan | Perintah |
 |---|---|
-| Pasang alat | `rokit install` (atau `aftman install`), lihat `rokit.toml` |
+| Pasang alat | `rokit install`; paket dan versi dipin di `rokit.toml`, keputusan di `docs/adr/0002-toolchain-manager.md` |
 | Sinkron ke Studio | `rojo serve` lalu sambungkan lewat plugin Rojo |
 | Build place | `rojo build -o build/TTSParty.rbxl` |
 | Format | `stylua src tests` |
-| Cek format (CI) | `stylua --check src tests` |
+| Cek format | `stylua --check src tests` |
 | Lint | `selene src tests` |
-| Analisis tipe | `rojo sourcemap default.project.json -o sourcemap.json` lalu `luau-lsp analyze --sourcemap sourcemap.json src` |
-| Unit test | `lune run tests/run` (runner dipilih di ADR-001) |
-| Validasi puzzle (mulai M6) | `python tools/puzzle_gen/validate.py` |
-| Semua pemeriksaan | `./scripts/check.sh` (format-check + lint + analyze + test) |
+| Analisis tipe | Bila `rojo` dan `luau-lsp` tersedia: `rojo sourcemap default.project.json -o sourcemap.json`, lalu `luau-lsp analyze --sourcemap sourcemap.json src` (saat ini LSP memperingatkan definisi Roblox belum dikonfigurasi) |
+| Unit test | `lune run tests/run` (runner Lune dipilih; alasan di `docs/adr/0001-test-runner.md`) |
+| Validasi puzzle (rencana M6; skrip belum tersedia) | `python tools/puzzle_gen/validate.py` |
+| Semua pemeriksaan | Bash: `./scripts/check.sh`; Windows PowerShell: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1` (format-check + lint + analisis tipe bila tersedia + test) |
 
-`scripts/check.sh` wajib hijau sebelum commit.
+`scripts/check.sh` wajib hijau sebelum commit; di Windows gunakan `scripts/check.ps1` melalui perintah PowerShell di atas.
 
 ---
 
-## 3. Struktur Proyek (subset M0 sampai M2)
+## 3. Struktur Proyek target (subset M0 sampai M2)
+
+Pohon berikut menggambarkan struktur yang dituju; modul fitur pada tugas mendatang belum tentu ada di checkout M0.
 
 ```
 proyek/
@@ -56,8 +58,10 @@ proyek/
 ├─ rokit.toml
 ├─ stylua.toml
 ├─ selene.toml
+├─ roblox.yml                 # definisi std Roblox untuk Selene
 ├─ AGENTS.md
 ├─ scripts/check.sh
+├─ scripts/check.ps1          # pemeriksaan native Windows
 ├─ docs/
 │  ├─ GDD.md
 │  ├─ SPEC.md
@@ -147,18 +151,18 @@ Penamaan file untuk Rojo: `init.server.luau` / `init.client.luau` untuk skrip bo
 ### 5.1 Kebutuhan
 
 1. Repositori git dengan struktur pada Bagian 3 dan `default.project.json` yang valid.
-2. Toolchain terpasang lewat manajer alat (Rokit atau Aftman): Rojo, StyLua, Selene, Lune (dan luau-lsp bila tersedia). Pilihan dicatat di ADR-0002.
-3. `stylua.toml`, `selene.toml`, dan `.gitignore` (mengabaikan `build/`, `sourcemap.json`, `*.rbxl.lock`).
-4. Runner test berjalan di luar Studio dengan minimal satu test contoh (`tests/WordUtils.spec.luau`). Pilihan runner dicatat di ADR-0001.
-5. `scripts/check.sh` menjalankan format-check, lint, analyze, dan test, lalu gagal (exit non-zero) bila salah satunya gagal.
+2. Toolchain terpasang lewat Rokit sesuai `rokit.toml`: Rojo, StyLua, Selene, Lune, dan luau-lsp. Keputusan dicatat di `docs/adr/0002-toolchain-manager.md`.
+3. `stylua.toml`, `selene.toml`, definisi std Roblox `roblox.yml`, dan `.gitignore` (mengabaikan `build/`, `sourcemap.json`, `*.rbxl.lock`).
+4. Runner test berjalan di luar Studio dengan smoke test saat ini (`tests/smoke.spec.luau`); test WordUtils dibuat di T1.1. Pilihan runner dicatat di `docs/adr/0001-test-runner.md`.
+5. `scripts/check.sh` (Windows: `scripts/check.ps1`) menjalankan format-check, lint, analisis tipe bila tersedia, dan test, lalu gagal (exit non-zero) bila salah satunya gagal.
 6. `AGENTS.md` (draf dari GDD Lampiran A) di root repositori.
-7. (Opsional) GitHub Actions yang menjalankan `scripts/check.sh` pada tiap push/PR.
+7. (Opsional; belum dibuat) GitHub Actions yang menjalankan `scripts/check.sh` pada tiap push/PR. Penambahan CI memerlukan persetujuan pengembang.
 
 ### 5.2 Kriteria selesai
 
 - [ ] `rojo serve` + plugin Rojo: skrip dari `src/` muncul di Studio (ReplicatedStorage/Shared, ServerScriptService/Server, StarterPlayerScripts/Client, ServerStorage/Puzzles).
 - [ ] `rojo build` menghasilkan file `.rbxl` yang dapat dibuka di Studio tanpa error.
-- [ ] `./scripts/check.sh` hijau di mesin bersih setelah `rokit install`.
+- [ ] `./scripts/check.sh` hijau di mesin bersih setelah `rokit install` (Windows: gunakan PowerShell untuk `scripts/check.ps1`).
 - [ ] Skrip bootstrap server dan client mencetak satu baris log saat start dan tidak ada error di Output.
 - [ ] ADR-0001 dan ADR-0002 ada dan menjelaskan alasan pilihan.
 
@@ -438,7 +442,7 @@ Bila satu kata cocok dengan lebih dari satu slot (kata sama di dua slot), semua 
 
 ## 9. Rencana Test
 
-Runner: dipilih di ADR-0001 (Lune dengan runner ringan, atau Jest-Lua). File `tests/*.spec.luau`.
+Runner: Lune dengan runner ringan sesuai `docs/adr/0001-test-runner.md`. Test ada di `tests/*.spec.luau` dan setiap spec mengikuti kontrak di ADR.
 
 | Modul | Kasus minimum |
 |---|---|

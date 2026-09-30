@@ -24,12 +24,12 @@ Dokumen ini memecah SPEC menjadi tugas kecil yang dapat dikerjakan satu per satu
 
 | Tag | Arti |
 |---|---|
-| `[Auto]` | Dapat diverifikasi agent lewat `./scripts/check.sh` |
+| `[Auto]` | Dapat diverifikasi lewat `./scripts/check.sh` (Windows: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1`) |
 | `[Studio]` | Butuh Roblox Studio. **Dilakukan pengembang.** Agent hanya menyiapkan langkah ujinya |
 
 **Aturan untuk setiap tugas (Definition of Done)**
 
-- [ ] `./scripts/check.sh` hijau (setelah T0.6 selesai).
+- [ ] `./scripts/check.sh` hijau (Windows: gunakan `scripts/check.ps1`; setelah T0.6 selesai).
 - [ ] Logika murni punya unit test.
 - [ ] Satu tugas = satu cabang/PR atau beberapa commit kecil dengan pesan Conventional Commits.
 - [ ] Dokumen terdampak diperbarui (SPEC/GDD/ADR).
@@ -39,7 +39,7 @@ Dokumen ini memecah SPEC menjadi tugas kecil yang dapat dikerjakan satu per satu
 
 ```
 Kerjakan tugas T<ID> dari docs/PLAN.md. Baca docs/SPEC.md bagian terkait dan AGENTS.md.
-Tulis test bersama implementasi. Jalankan ./scripts/check.sh.
+Tulis test bersama implementasi. Jalankan `./scripts/check.sh` (Windows: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1`).
 Akhiri dengan laporan sesuai AGENTS.md bagian 12.
 Jangan mengerjakan tugas lain.
 ```
@@ -51,11 +51,11 @@ Jangan mengerjakan tugas lain.
 | ID | Tugas | Ukuran | Bergantung pada | Verifikasi |
 |---|---|---|---|---|
 | T0.1 | Kerangka repositori | S | - | Auto |
-| T0.2 | Toolchain (Rokit/Aftman) + ADR-0002 | S | T0.1 | Auto |
+| T0.2 | Toolchain Rokit + ADR-0002 | S | T0.1 | Auto |
 | T0.3 | Project Rojo + skrip bootstrap | S | T0.1 | Auto + Studio |
 | T0.4 | Konfigurasi format dan lint | S | T0.2 | Auto |
 | T0.5 | Test runner + ADR-0001 | M | T0.2 | Auto |
-| T0.6 | `scripts/check.sh` | S | T0.4, T0.5 | Auto |
+| T0.6 | `scripts/check.sh` (PowerShell: `scripts/check.ps1`) | S | T0.4, T0.5 | Auto |
 | T0.7 | AGENTS.md, docs, CI (opsional) | S | T0.6 | Auto |
 | **CP0** | **Checkpoint M0** | | T0.1 sampai T0.7 | Studio |
 | T1.1 | Tipe, konstanta, fixture, `WordUtils` | S | CP0 | Auto |
@@ -136,9 +136,10 @@ Tugas dalam kurung `{}` dapat dikerjakan paralel atau dalam urutan bebas.
 - **Syarat runner:** dapat memuat modul `src/shared` di luar Studio. Bila `require` berbasis path Rojo bermasalah, dokumentasikan solusinya di ADR-0001.
 - **Skill:** `$test-driven-development`, `$documentation-and-adrs`
 
-### T0.6 `scripts/check.sh` (S)
+### T0.6 `scripts/check.sh` dan pemeriksaan Windows (S)
 
 - Jalankan berurutan: `stylua --check`, `selene`, analisis tipe (`rojo sourcemap` + `luau-lsp analyze`, bila tersedia), test.
+- Di Windows tersedia padanan native `scripts/check.ps1`, dengan urutan pemeriksaan dan perilaku gagal yang sama.
 - Berhenti dan exit non-zero pada kegagalan pertama, dengan pesan jelas.
 - **Kriteria:** hijau pada repo bersih. Merah bila ada pelanggaran format, lint, tipe, atau test.
 - **Skill:** `$ci-cd-and-automation` (prinsip saja)
@@ -146,12 +147,12 @@ Tugas dalam kurung `{}` dapat dikerjakan paralel atau dalam urutan bebas.
 ### T0.7 AGENTS.md, dokumen, dan CI opsional (S)
 
 - Pastikan `AGENTS.md` di root dan `docs/` lengkap. Perbarui baris "Status milestone saat ini".
-- (Opsional) GitHub Actions: jalankan `scripts/check.sh` pada push/PR.
+- (Opsional; perlu persetujuan pengembang) GitHub Actions menjalankan `scripts/check.sh` pada push/PR. Workflow belum dibuat.
 - **Kriteria:** dokumen terhubung dan tidak ada tautan/jalur yang salah. Bila CI dibuat, satu run hijau.
 
 ### CP0: Checkpoint M0
 
-- [ ] `./scripts/check.sh` hijau di clone baru setelah `rokit install`.
+- [ ] `./scripts/check.sh` hijau di clone baru setelah `rokit install` (Windows: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/check.ps1`).
 - [ ] `[Studio]` sinkron Rojo berhasil dan bootstrap berjalan tanpa error.
 - [ ] ADR-0001 dan ADR-0002 ada.
 - [ ] Perbarui status milestone di `AGENTS.md` menjadi M1.
